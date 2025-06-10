@@ -259,7 +259,7 @@ INSERT INTO cliente (endereco, codCidade, telefone, tipo, dataCadastro, cep) VAL
   ('Rua do Comércio, 200', 2, '21966665555', 'J', '2002-02-20', '22241000');
 
 INSERT INTO clienteFisico (codCliente, nome, dataNascimento, cpf, rg) VALUES
-  (1, 'Paulo Roberto', '1975-05-20', '11122233344', 'SP1234567');
+  (1, 'Paulo Roberto', '1975-05-20', '11122233344', '12345678');
 
 INSERT INTO clienteJuridico (codCliente, nomeFantasia, razaoSocial, ie, cgc) VALUES
   (2, 'TechRio', 'TechRio Soluções LTDA', 'RJ987654', '98765432000100');
@@ -298,7 +298,6 @@ INSERT INTO contasPagar (dataVencimento, parcela, codPedido, valor, dataPagament
 INSERT INTO contasReceber (dataVencimento, codVenda, parcela, valor, dataPagamento, localPagamento, juros, correcaoMonetaria) VALUES
   ('2023-09-01', 1, 1, 300.00, NULL, NULL, 0, 0);
 
--- 1. Pedido de 2014 para o NATURAL JOIN com fornecedor
 INSERT INTO fornecedor (nomeFantasia, razaoSocial, ie, cgc, endereco, telefone, codCidade)
 VALUES ('Incepa', 'Incepa LTDA', 'PR123456', '12345678000111', 'Rua Incepa, 100', '41988887777', 1)
 ON DUPLICATE KEY UPDATE nomeFantasia=nomeFantasia;
@@ -306,7 +305,6 @@ ON DUPLICATE KEY UPDATE nomeFantasia=nomeFantasia;
 INSERT INTO pedido (dataRealizacao, dataEntrega, codFornecedor, valor)
 VALUES ('2014-06-15', '2014-06-20', (SELECT codFornecedor FROM fornecedor WHERE nomeFantasia='Incepa'), 500.00);
 
--- 2. Cidade 'Apucarana' e vendedor nela
 INSERT INTO estado (siglaEstado, nome) VALUES ('PR', 'Paraná')
 ON DUPLICATE KEY UPDATE nome=nome;
 INSERT INTO cidade (nome, siglaEstado) VALUES ('Apucarana', 'PR')
@@ -314,7 +312,6 @@ ON DUPLICATE KEY UPDATE nome=nome;
 INSERT INTO vendedor (nome, dataNascimento, endereco, cep, telefone, codCidade, dataContratacao, codDepartamento)
 VALUES ('Joana Apucarana', '1992-10-10', 'Rua Central, 10', '86800000', '43999990000', (SELECT codCidade FROM cidade WHERE nome='Apucarana'), '2023-01-01', 1);
 
--- 3. Produto 'Cal', classe 'Acabamentos', lote, venda e itemVenda
 INSERT INTO classe (sigla, nome, descricao) VALUES ('C', 'Acabamentos', 'Produtos de acabamento')
 ON DUPLICATE KEY UPDATE nome=nome;
 INSERT INTO produto (descricao, unidadeMedida, embalagem, codClasse, precoVenda, estoqueMinimo)
@@ -333,53 +330,39 @@ VALUES (
   2
 );
 
--- 4. Produto da classe 'Acabamentos' já inserido acima ('Cal')
-
--- 5. Pedido do fornecedor 'Incepa' já inserido acima
-
--- 6. Produto sem venda (para LEFT JOIN)
 INSERT INTO produto (descricao, unidadeMedida, embalagem, codClasse, precoVenda, estoqueMinimo)
 VALUES ('Tinta', 'LT', 'Lata', (SELECT codClasse FROM classe LIMIT 1), 50.00, 10)
 ON DUPLICATE KEY UPDATE descricao=descricao;
 
--- 7. Fornecedor sem pedido (para LEFT JOIN)
 INSERT INTO fornecedor (nomeFantasia, razaoSocial, ie, cgc, endereco, telefone, codCidade)
 VALUES ('FornecedorSemPedido', 'Fornecedor Sem Pedido LTDA', 'SP000000', '00000000000100', 'Rua Zero, 0', '1100000000', 1)
 ON DUPLICATE KEY UPDATE nomeFantasia=nomeFantasia;
 
--- 8. Departamento sem vendedor (para RIGHT JOIN)
 INSERT INTO departamento (nome, descricaoFuncional, localizacao)
 VALUES ('SemVendedor', 'Departamento vazio', 'Subsolo')
 ON DUPLICATE KEY UPDATE nome=nome;
 
--- 9. Cliente sem venda (para RIGHT JOIN/UNION)
 INSERT INTO cliente (endereco, codCidade, telefone, tipo, dataCadastro, cep)
 VALUES ('Rua SemVenda, 1', 1, '1100000000', 'F', '2022-01-01', '00000000');
 INSERT INTO clienteFisico (codCliente, nome, dataNascimento, cpf, rg)
 VALUES (LAST_INSERT_ID(), 'Cliente Sem Venda', '1990-01-01', '99999999999', 'RG999999');
 
--- 10. Classe sem produto (para LEFT JOIN)
 INSERT INTO classe (sigla, nome, descricao) VALUES ('D', 'SemProduto', 'Classe sem produto')
 ON DUPLICATE KEY UPDATE nome=nome;
 
--- 11. Estado sem cidade (para RIGHT JOIN)
 INSERT INTO estado (siglaEstado, nome) VALUES ('ES', 'Espírito Santo')
 ON DUPLICATE KEY UPDATE nome=nome;
 
--- 12. Produto sem lote (para LEFT JOIN)
 INSERT INTO produto (descricao, unidadeMedida, embalagem, codClasse, precoVenda, estoqueMinimo)
 VALUES ('Cimento', 'KG', 'Saco', (SELECT codClasse FROM classe LIMIT 1), 25.00, 20)
 ON DUPLICATE KEY UPDATE descricao=descricao;
 
--- 13. Cidade sem vendedor (para RIGHT JOIN)
 INSERT INTO cidade (nome, siglaEstado) VALUES ('CidadeSemVendedor', 'ES')
 ON DUPLICATE KEY UPDATE nome=nome;
 
--- 14. Cidade sem cliente (para RIGHT JOIN)
 INSERT INTO cidade (nome, siglaEstado) VALUES ('CidadeSemCliente', 'ES')
 ON DUPLICATE KEY UPDATE nome=nome;
 
--- 15. Cliente jurídico sem venda (para RIGHT JOIN/UNION)
 INSERT INTO cliente (endereco, codCidade, telefone, tipo, dataCadastro, cep)
 VALUES ('Rua Empresarial, 500', (SELECT codCidade FROM cidade WHERE nome='CidadeSemCliente'), '34999990000', 'J', '2022-01-01', '38000000');
 INSERT INTO clienteJuridico (codCliente, nomeFantasia, razaoSocial, ie, cgc)

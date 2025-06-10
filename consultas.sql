@@ -59,8 +59,16 @@ FROM produto
 WHERE estoqueMinimo > 100;
 
 -- 11. Nome e telefone dos clientes que possuem pelo menos uma venda registrada.
-SELECT DISTINCT c.nome, c.telefone
-FROM cliente c
+SELECT DISTINCT cf.nome, c.telefone
+FROM clienteFisico cf
+JOIN cliente c ON cf.codCliente = c.codCliente
+JOIN venda v ON c.codCliente = v.codCliente
+
+UNION
+
+SELECT DISTINCT cj.nomeFantasia AS nome, c.telefone
+FROM clienteJuridico cj
+JOIN cliente c ON cj.codCliente = c.codCliente
 JOIN venda v ON c.codCliente = v.codCliente;
 
 -- 12. Nome dos fornecedores e a quantidade de pedidos realizados para cada um.

@@ -238,4 +238,64 @@ CREATE TABLE IF NOT EXISTS contasReceber (
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+INSERT INTO departamento (nome, descricaoFuncional, localizacao) VALUES
+  ('Comercial', 'Depto Comercial', 'Térreo'),
+  ('TI', 'Tecnologia da Informação', '3º Andar');
+
+INSERT INTO estado (siglaEstado, nome) VALUES
+  ('SP', 'São Paulo'),
+  ('RJ', 'Rio de Janeiro');
+
+INSERT INTO cidade (nome, siglaEstado) VALUES
+  ('São Paulo', 'SP'),
+  ('Niterói', 'RJ');
+
+INSERT INTO vendedor (nome, dataNascimento, endereco, cep, telefone, codCidade, dataContratacao, codDepartamento) VALUES
+  ('Marcos Lima', '1982-07-15', 'Av. Paulista, 1000', '01310000', '11999990000', 1, '2022-02-01', 1),
+  ('Fernanda Dias', '1995-11-30', 'Rua das Laranjeiras, 50', '22240000', '21988887777', 2, '2021-03-10', 2);
+
+INSERT INTO cliente (endereco, codCidade, telefone, tipo, dataCadastro, cep) VALUES
+  ('Rua Marechal Floriano, 56', 1, '11977776666', 'F', '2001-04-10', '01311000'),
+  ('Rua do Comércio, 200', 2, '21966665555', 'J', '2002-02-20', '22241000');
+
+INSERT INTO clienteFisico (codCliente, nome, dataNascimento, cpf, rg) VALUES
+  (1, 'Paulo Roberto', '1975-05-20', '11122233344', 'SP1234567');
+
+INSERT INTO clienteJuridico (codCliente, nomeFantasia, razaoSocial, ie, cgc) VALUES
+  (2, 'TechRio', 'TechRio Soluções LTDA', 'RJ987654', '98765432000100');
+
+INSERT INTO classe (sigla, nome, descricao) VALUES
+  ('B', 'Bebidas', 'Bebidas em geral');
+
+INSERT INTO produto (descricao, unidadeMedida, embalagem, codClasse, precoVenda, estoqueMinimo) VALUES
+  ('Refrigerante', 'LT', 'Caixa', 1, 6.50, 80),
+  ('Água Mineral', 'LT', 'Caixa', 1, 3.00, 200);
+
+INSERT INTO produtoLote (codProduto, numeroLote, quantidadeAdquirida, quantidadeVendida, precoCusto, validade) VALUES
+  (1, 201, 50, 40, 4.00, '2022-12-31'),
+  (2, 202, 300, 100, 2.00, '2026-05-01');
+
+INSERT INTO venda (codCliente, codVendedor, dataVenda, enderecoEntrega, statusVenda) VALUES
+  (2, 1, '2023-08-15', 'Rua do Comércio, 200', 'Despachada'),
+  (1, 2, '2024-02-10', 'Rua Marechal Floriano, 56', 'Pendente');
+
+INSERT INTO itemVenda (codVenda, codProduto, numeroLote, quantidade) VALUES
+  (1, 1, 201, 5),
+  (2, 2, 202, 10);
+
+INSERT INTO fornecedor (nomeFantasia, razaoSocial, ie, cgc, endereco, telefone, codCidade) VALUES
+  ('Fornecedora SP', 'Fornecedora SP LTDA', 'SP876543', '12312312000199', 'Rua do Fornecedor, 1', '11955554444', 1);
+
+INSERT INTO pedido (dataRealizacao, dataEntrega, codFornecedor, valor) VALUES
+  ('2024-03-01', '2024-03-10', 1, 1000.00);
+
+INSERT INTO itemPedido (codPedido, codProduto, quantidade) VALUES
+  (1, 1, 15);
+
+INSERT INTO contasPagar (dataVencimento, parcela, codPedido, valor, dataPagamento, localPagamento, juros, correcaoMonetaria) VALUES
+  ('2024-04-01', 1, 1, 1000.00, NULL, NULL, 0, 0);
+
+INSERT INTO contasReceber (dataVencimento, codVenda, parcela, valor, dataPagamento, localPagamento, juros, correcaoMonetaria) VALUES
+  ('2023-09-01', 1, 1, 300.00, NULL, NULL, 0, 0);
+
 COMMIT;
